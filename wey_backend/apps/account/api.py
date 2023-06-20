@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from . import forms
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from .models import User, FriendshipRequest
 
 @api_view(["POST"])
 @authentication_classes([])
@@ -32,3 +33,17 @@ def informationAboutUser(request):
         'email': request.user.email,
         'name': request.user.name,                
         })
+
+@api_view(['POST'])
+def sendFriendshipRequest(request, pk):
+
+    user = User.objects.get(pk=pk)
+
+    friendship = FriendshipRequest(created_for=user, created_by = request.user)
+
+
+
+
+
+
+    return JsonResponse({'message':'user in ship'})

@@ -8,4 +8,5 @@ urlpatterns = [
 
     path('api/', include('apps.account.urls')),
     path('api/posts/', include('apps.post.urls')),
+    path('api/search/', include('apps.search.urls')),
 ]

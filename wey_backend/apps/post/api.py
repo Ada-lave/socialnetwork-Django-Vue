@@ -4,6 +4,8 @@ from .serializers import PostSerializer
 from .models import Post
 from rest_framework.decorators import api_view
 from .forms import PostForm
+from apps.account.models import User
+from apps.account.serializers import UserSerializer
 
 
 @api_view(["GET"])
@@ -17,11 +19,14 @@ def postListAll(request):
 
 @api_view(['GET'])
 def postListUser(request, id):
+    user = User.objects.get(pk=id)
     posts = Post.objects.filter(created_by=id)
 
-    serializer = PostSerializer(posts, many=True)
+    post_serializer = PostSerializer(posts, many=True)
+    user_serializer = UserSerializer(user)
 
-    return JsonResponse(serializer.data, safe=False)
+    return JsonResponse({'posts':post_serializer.data,
+                        'user':user_serializer.data}, safe=False)
 
 
 @api_view(["POST"])

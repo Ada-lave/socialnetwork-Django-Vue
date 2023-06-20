@@ -29,6 +29,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=256, blank=True, default='')
     avatar = models.ImageField(upload_to='avatars', blank=True, null=True)
+    friends = models.ManyToManyField('self')
 
 
     is_active = models.BooleanField(default=True)
@@ -43,3 +44,22 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = []
+
+
+class FriendshipRequest(models.Model):
+    SENT = 'sent'
+    ACCEPTED = 'accepted'
+    REJECTED = 'rejected'
+
+    STATUS_CHOISES = (
+        (SENT, 'Sent'),
+        (ACCEPTED, 'Accepted'),
+        (REJECTED, 'Rejected'),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    status = models.CharField(max_length=30, choices=STATUS_CHOISES, default=SENT)
+
+    created_for = models.ForeignKey(User, related_name='recived_friendshiprequests', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
