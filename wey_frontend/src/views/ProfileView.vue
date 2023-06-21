@@ -147,7 +147,7 @@ import Feed from '../components/Feed.vue'
 
             sendFriendshipRequest() {
                 axios
-                .post(`/api/friend/request/${this.$route.params.id}/`,)
+                .post(`/api/friends/${this.$route.params.id}/request/`,)
                 .then(response => {
                     console.log(response.data.message)
                 })

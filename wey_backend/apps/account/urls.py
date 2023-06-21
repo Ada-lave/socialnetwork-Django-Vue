@@ -9,5 +9,6 @@ urlpatterns = [
     path('login/', TokenObtainPairView.as_view(), name='token_obtain'),
     path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
-    path('friend/request/<uuid:pk>/', sendFriendshipRequest),
+    path('friends/<uuid:pk>/request/', sendFriendshipRequest),
+    path('profile/friends/<uuid:pk>/', friendsRequest)
 ]

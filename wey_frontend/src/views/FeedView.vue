@@ -54,7 +54,7 @@ import Feed from '../components/Feed.vue'
 
 
     export default {
-        name: 'SearchView',
+        name: 'FeedView',
 
         components: {
             PeopleYouMayKnow,

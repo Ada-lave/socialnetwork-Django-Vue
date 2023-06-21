@@ -3,6 +3,8 @@ from . import forms
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from .models import User, FriendshipRequest
 
+from .serializers import UserSerializer, FriendshipRequestSerializer
+
 @api_view(["POST"])
 @authentication_classes([])
 @permission_classes([])
@@ -34,12 +36,31 @@ def informationAboutUser(request):
         'name': request.user.name,                
         })
 
+
+@api_view(['GET'])
+def friendsRequest(reqeust, pk):
+    user = User.objects.get(pk=pk)
+
+    if user == reqeust.user:
+        reqeusts = FriendshipRequest.objects.filter(created_for=reqeust.user)
+
+    friends = user.friends.all()
+
+    return JsonResponse({
+        'user': UserSerializer(user).data,
+        'friends': UserSerializer(friends, many=True).data,
+        'requests': FriendshipRequestSerializer(reqeusts, many=True).data
+    })
+
+
+
+
 @api_view(['POST'])
 def sendFriendshipRequest(request, pk):
 
     user = User.objects.get(pk=pk)
 
-    friendship = FriendshipRequest(created_for=user, created_by = request.user)
+    friendship = FriendshipRequest.objects.create(created_for=user, created_by = request.user)
 
 
 
