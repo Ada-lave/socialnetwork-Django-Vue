@@ -5,17 +5,30 @@
             <div class="p-4 bg-white border border-gray-200 text-center rounded-lg">
                 <img src="https://i.pravatar.cc/300?img=70" class="mb-6 rounded-full">
 
+
                 <p><strong>{{ user.name }}</strong></p>
 
                 <div class="mt-6 flex space-x-8 justify-around">
-                    <p class="text-xs text-gray-500">200 friends</p>
+                    <RouterLink v-bind:to="{name:'friends', params: {'id':user.id}}">
+                        <p class="text-xs text-gray-500">200 friends</p>
+                    </RouterLink>
+                    
                     <p class="text-xs text-gray-500">448 posts</p>
                 </div>
 
                 <div class="mt-6">
                     <button
                      class="py-4 px-4 text-white bg-green-700 rounded-lg"
-                     v-on:click="sendFriendshipRequest()">Добавить в друзья</button>
+                     v-on:click="sendFriendshipRequest()"
+                     v-if="userStore.user.id !== user.id">
+                     Добавить в друзья
+                    </button>
+                    <button
+                     class="py-4 px-8 text-white bg-red-700 rounded-lg"
+                     v-on:click="logout()"
+                     v-else>
+                     Выйти
+                    </button>
                 </div>
             </div>
         </div>
@@ -66,11 +79,13 @@
 
 
 <script >
+import { RouterLink } from 'vue-router'
 import axios from 'axios'
 import PeopleYouMayKnow from '../components/PeopleYouMayKnow.vue'
 import Trends from '../components/Trends.vue'
 import { useUserStore } from "@/stores/user"
 import Feed from '../components/Feed.vue'
+import {useToastStore} from '@/stores/toast'
 
 
 
@@ -79,16 +94,20 @@ import Feed from '../components/Feed.vue'
 
         setup() {
             const userStore = useUserStore()
+            const toastStore = useToastStore()
 
             return {
-                userStore
+                userStore,
+                toastStore,
+
             }
         },
         components: {
-            PeopleYouMayKnow,
-            Trends,
-            Feed
-        },
+    PeopleYouMayKnow,
+    Trends,
+    Feed,
+    RouterLink
+},
 
         data(){
             return {
@@ -150,10 +169,24 @@ import Feed from '../components/Feed.vue'
                 .post(`/api/friends/${this.$route.params.id}/request/`,)
                 .then(response => {
                     console.log(response.data.message)
+
+                if (response.data.message=='user alredy in ship')
+                {
+                    this.toastStore.showToast(5000,'заявка уже отправлена', 'bg-red-500')
+                }
+                else if (response.data.message=='user add ship')
+                {
+                    this.toastStore.showToast(5000,'заявка  отправлена', 'bg-emerald-500')
+                }
                 })
                 .catch(error => {
                     console.log(error)
                 })
+            },
+
+            logout(){
+                this.userStore.removeToken()
+                this.$router.push('/login')
             }
         }
     }

@@ -19,8 +19,7 @@
                 </div>
             </div>
 
-            <div class= "p-4 bg-white   border-gray-200 rounded-lg grid grid-cols-4 gap-4"
-                >
+            <div class= "p-4 bg-white   border-gray-200 rounded-lg grid grid-cols-4 gap-4">
 
                 
                 <div class="p-4 text-center bg-gray-100 rounded-lg"

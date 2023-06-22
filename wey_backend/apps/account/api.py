@@ -40,16 +40,19 @@ def informationAboutUser(request):
 @api_view(['GET'])
 def friendsRequest(reqeust, pk):
     user = User.objects.get(pk=pk)
+    reqeusts = []
 
     if user == reqeust.user:
-        reqeusts = FriendshipRequest.objects.filter(created_for=reqeust.user)
+        reqeusts = FriendshipRequest.objects.filter(created_for=reqeust.user, status=FriendshipRequest.SENT)
+        reqeusts = FriendshipRequestSerializer(reqeusts, many=True)
+        reqeusts = reqeusts.data
 
     friends = user.friends.all()
 
     return JsonResponse({
         'user': UserSerializer(user).data,
         'friends': UserSerializer(friends, many=True).data,
-        'requests': FriendshipRequestSerializer(reqeusts, many=True).data
+        'requests': reqeusts
     })
 
 
@@ -60,11 +63,31 @@ def sendFriendshipRequest(request, pk):
 
     user = User.objects.get(pk=pk)
 
-    friendship = FriendshipRequest.objects.create(created_for=user, created_by = request.user)
+    check1 = FriendshipRequest.objects.filter(created_for=request.user).filter(created_by=user)
+    check2 = FriendshipRequest.objects.filter(created_for=user).filter(created_by=request.user)
 
+    if not check1 or not check2:
+        FriendshipRequest.objects.create(created_for=user, created_by = request.user)
+        return JsonResponse({'message':'user add ship'})
+    else:
+         return JsonResponse({'message':'user alredy in ship'})
 
+@api_view(['POST'])
+def handleRequest(request, id, status):
+    user = User.objects.get(pk=id)
+    req_user = request.user
 
+    friendship = FriendshipRequest.objects.filter(created_for=request.user).get(created_by=user)
+    friendship.status = status
+    friendship.save()
 
+    if status=='accepted':
+        user.friends.add(request.user)
+        user.friends_count += 1
+        user.save()
 
+        req_user.friends_count += 1
+        req_user.save()
 
-    return JsonResponse({'message':'user in ship'})
+    return JsonResponse({'message':f" {request.user.name}: {user.name} {status}"})
+    
