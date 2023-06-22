@@ -16,7 +16,7 @@
 
         <div class="main-center col-span-2 space-y-4">
             
-            <div class= "p-4 bg-white   border-gray-200 rounded-lg "
+            <div class= "p-4 bg-white   border-gray-200 rounded-lg space-y-6"
                 v-if="friendshipReq.length">
 
                 
@@ -49,7 +49,7 @@
                 
             </div>
 
-            <div class= "p-4 bg-white   border-gray-200 rounded-lg grid grid-cols-4 gap-4">
+            <div class= "p-4 bg-white   border-gray-200 rounded-lg grid grid-cols-4 gap-4" v-if="friends.length">
 
                 
                 <div class="p-4 text-center bg-gray-100 rounded-lg"

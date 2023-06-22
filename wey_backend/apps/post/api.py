@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from .serializers import PostSerializer
-from .models import Post
+from .models import Post, Like
 from rest_framework.decorators import api_view
 from .forms import PostForm
 from apps.account.models import User
@@ -49,4 +49,34 @@ def addPost(request):
         return JsonResponse(serializer.data, safe=False)
 
     return JsonResponse({'message':'cant add post'})
+
+@api_view(['POST'])
+def postLike(request, pk):
+    post = Post.objects.get(pk=pk)
+
+    if not post.likes.filter(created_by=request.user):
+        like = Like.objects.create(created_by=request.user)
+
+        post.likes_count += 1
+        post.likes.add(like)
+        post.save()
+        return JsonResponse({'message':'like append'})
+    
+    elif post.likes.filter(created_by=request.user):
+        if post.likes_count !=0:
+            post.likes_count -= 1
+            post.save()
+            return JsonResponse({'message':'like delete'})
+        else:
+            post.likes_count += 1
+            post.save()
+            return JsonResponse({'message':'like up'})
+
+       
+        
+        
+        
+    return JsonResponse({'message':''})
+
+    
 
