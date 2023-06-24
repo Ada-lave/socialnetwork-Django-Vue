@@ -1,11 +1,19 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .serializers import PostSerializer
+from .serializers import PostSerializer, PostDetailSerializer
 from .models import Post, Like
 from rest_framework.decorators import api_view
 from .forms import PostForm
 from apps.account.models import User
 from apps.account.serializers import UserSerializer
+
+@api_view(['GET'])
+def postDetail(request, pk):
+    post = Post.objects.get(pk=pk)
+
+    return JsonResponse({
+        'post': PostDetailSerializer(post).data
+    })
 
 
 @api_view(["GET"])
@@ -73,10 +81,13 @@ def postLike(request, pk):
             return JsonResponse({'message':'like up'})
 
        
-        
-        
-        
     return JsonResponse({'message':''})
+
+
+api_view(['POST'])
+def postComment(request, pk):
+    post = Post.objects.get(pk=pk)
+    print(request.data)
 
     
 
