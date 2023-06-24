@@ -10,6 +10,7 @@ from apps.account.serializers import UserSerializer
 @api_view(['GET'])
 def postDetail(request, pk):
     post = Post.objects.get(pk=pk)
+    print('hi')
 
     return JsonResponse({
         'post': PostDetailSerializer(post).data
