@@ -8,6 +8,7 @@ import SearchView from '../views/SearchView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import FriendsView from '../views/FriendsView.vue'
 import PostView from '../views/PostView.vue'
+import test from '../views/test.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -54,8 +55,13 @@ const router = createRouter({
     },
     {
       path: '/:id',
-      name: 'post',
+      name: 'postview',
       component: PostView
+    },
+    {
+      path: '/m',
+      name: 'm',
+      component: test
     },
     {
       path: '/about',

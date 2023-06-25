@@ -42,6 +42,13 @@ def postListUser(request, id):
     return JsonResponse({'posts':post_serializer.data,
                         'user':user_serializer.data}, safe=False)
 
+@api_view(["POST"])
+def addPost2(request):
+    data = request.data
+
+    print(data)
+
+    return JsonResponse({'message':'cant add post'})
 
 @api_view(["POST"])
 def addPost(request):
