@@ -2,7 +2,7 @@
     <div class="max-w-7xl mx-auto grid grid-cols-4 gap-4">
        
 
-        <div class="main-center col-span-3 space-y-4">
+        <div class="main-center col-span-3 space-y-7">
             
             <div class="p-4 bg-white border border-gray-200 rounded-lg"
             v-if="post.id">
@@ -10,9 +10,9 @@
             <Feed v-bind:post="post"/>
             </div>
 
-            <div class="bg-white border border-gray-200 rounded-lg"
+            <div class="ml-4 bg-white border border-gray-200 rounded-lg"
             v-for="comment in comments" v-bind:key="comment.id">
-            {{ comment.id }}
+            <CommentItem v-bind:comment="comment"/>
             </div>
 
 
@@ -54,72 +54,81 @@
 </template>
 
 
-<script >
-import { RouterLink } from 'vue-router'
+<script>
 import axios from 'axios'
 import PeopleYouMayKnow from '../components/PeopleYouMayKnow.vue'
 import Trends from '../components/Trends.vue'
 import Feed from '../components/Feed.vue'
+import CommentItem from '../components/CommentItem.vue'
 
 
+export default {
+    name: 'PostView',
 
-    export default {
-        name: 'PostView',
+    components: {
+        PeopleYouMayKnow,
+        Trends,
+        Feed,
+        CommentItem,
+    },
 
-        components: {
-            PeopleYouMayKnow,
-            Trends,
-            Feed,
-        },
-
-        data(){
-            return {
-                post: {
-                    comments: []
-                },
-            
-                body: ''
+    data() {
+        return {
+            post: {
+                id: null,
                 
-            }
-        },
+            },
+            comments: [],
+            body: ''
+        }
+    },
 
-        mounted() {
-            this.getPost()
-        },
+    mounted() {
+        this.getPost(),
+        this.getComments()
+    },
 
-        methods: {
-            getPost(){
-                axios
+    methods: {
+        getPost() {
+            axios
                 .get(`/api/posts/${this.$route.params.id}/`)
                 .then(response => {
-                    console.log(response.data.post)
+                    console.log('data', response.data)
+
                     this.post = response.data.post
                 })
                 .catch(error => {
-                    console.log(error)
+                    console.log('error', error)
                 })
-            },
-            submitForm(){
-                console.log(this.body)
+        },
 
+        getComments(){
+            axios
+            .get(`/api/posts/${this.$route.params.id}/comments/`)
+            .then(response => {
+                this.comments = response.data
+                console.log(response.data)
+            })
+        },
 
-                axios
+        submitForm() {
+            console.log('submitForm', this.body)
+
+            axios
                 .post(`/api/posts/${this.$route.params.id}/comment/`, {
-                    'body' : this.body
+                    'body': this.body
                 })
                 .then(response => {
-                    console.log(response)
-                    
+                    console.log('data', response.data)
+
+                    this.comments.push(response.data)
+                    this.post.comments_count += 1
                     this.body = ''
-                    this.post.comments.unshift(response.data)
                 })
                 .catch(error => {
-                    console.log(error)
+                    console.log('error', error)
                 })
-            }
-
-            
         }
     }
-
+}
 </script>
