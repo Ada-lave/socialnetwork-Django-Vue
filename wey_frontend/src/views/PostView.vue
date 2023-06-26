@@ -10,8 +10,13 @@
             <Feed v-bind:post="post"/>
             </div>
 
+            <div class="bg-white border border-gray-200 rounded-lg"
+            v-for="comment in comments" v-bind:key="comment.id">
+            {{ comment.id }}
+            </div>
 
-             <div class=" bg-white border border-gray-200 rounded-lg">
+
+             <div class="bg-white border border-gray-200 rounded-lg">
 
                 <form v-on:submit.prevent="submitForm()" method="post">
 
@@ -69,7 +74,10 @@ import Feed from '../components/Feed.vue'
 
         data(){
             return {
-                post: {},
+                post: {
+                    comments: []
+                },
+            
                 body: ''
                 
             }
@@ -103,6 +111,7 @@ import Feed from '../components/Feed.vue'
                     console.log(response)
                     
                     this.body = ''
+                    this.post.comments.unshift(response.data)
                 })
                 .catch(error => {
                     console.log(error)

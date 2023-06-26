@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .serializers import PostSerializer, PostDetailSerializer
-from .models import Post, Like
+from .serializers import PostSerializer, PostDetailSerializer, CommentSerializer
+from .models import Post, Like, Comment
 from rest_framework.decorators import api_view
 from .forms import PostForm
 from apps.account.models import User
@@ -43,12 +43,20 @@ def postListUser(request, id):
                         'user':user_serializer.data}, safe=False)
 
 @api_view(["POST"])
-def addPost2(request):
-    data = request.data
+def postComment(request, pk):
+    post = Post.objects.get(pk=pk)
+    print(request.data.get('body'))
+    comment = Comment.objects.create(body=request.data.get('body'), created_by = request.user)
 
-    print(data)
+    if comment:
+        post.comments.add(comment)
+        post.comments_count += 1
+        post.save()
 
-    return JsonResponse({'message':'cant add post'})
+        serializer = CommentSerializer(comment)
+
+        return JsonResponse({'message':'comment was added', 'comment':serializer.data}, safe=False)
+    return JsonResponse({"message":'comment wasnt added'})
 
 @api_view(["POST"])
 def addPost(request):
@@ -92,10 +100,7 @@ def postLike(request, pk):
     return JsonResponse({'message':''})
 
 
-api_view(['POST'])
-def postComment(request, pk):
-    post = Post.objects.get(pk=pk)
-    print(request.data)
+
 
     
 
