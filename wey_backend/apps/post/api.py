@@ -7,14 +7,6 @@ from .forms import PostForm
 from apps.account.models import User
 from apps.account.serializers import UserSerializer
 
-@api_view(['GET'])
-def postDetail(request, pk):
-    post = Post.objects.get(pk=pk)
-    print('hi')
-
-    return JsonResponse({
-        'post': PostDetailSerializer(post).data
-    })
 
 
 @api_view(["GET"])
@@ -43,21 +35,7 @@ def postListUser(request, id):
     return JsonResponse({'posts':post_serializer.data,
                         'user':user_serializer.data}, safe=False)
 
-@api_view(["POST"])
-def postComment(request, pk):
-    post = Post.objects.get(pk=pk)
-    print(request.data.get('body'))
-    comment = Comment.objects.create(body=request.data.get('body'), created_by = request.user)
 
-    if comment:
-        post.comments.add(comment)
-        post.comments_count += 1
-        post.save()
-
-        serializer = CommentSerializer(comment)
-
-        return JsonResponse({'message':'comment was added', 'comment':serializer.data}, safe=False)
-    return JsonResponse({"message":'comment wasnt added'})
 
 @api_view(["POST"])
 def addPost(request):
@@ -103,5 +81,34 @@ def postLike(request, pk):
 
 
 
-    
 
+@api_view(['GET'])
+def postDetail(request, pk):
+    post = Post.objects.get(pk=pk)
+
+
+    return JsonResponse({
+        'post': PostDetailSerializer(post).data
+    }) 
+
+
+
+@api_view(['POST'])
+def postComment(request, pk):
+    comment = Comment.objects.create(body=request.data.get('body'), created_by=request.user)
+
+    post = Post.objects.get(pk=pk)
+    post.comments.add(comment)
+    post.comments_count = post.comments_count + 1
+    post.save()
+
+    serializer = CommentSerializer(comment)
+
+    return JsonResponse(serializer.data, safe=False)
+
+@api_view(['GET'])
+def postDetailComment(request, pk):
+    post = Post.objects.get(pk=pk)
+    comments = post.comments
+    serializer = CommentSerializer(comments, many=True)
+    return JsonResponse(serializer.data, safe=False)
