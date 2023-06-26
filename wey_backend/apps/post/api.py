@@ -21,6 +21,7 @@ def postDetail(request, pk):
 def postListAll(request):
 
     user_ids = [request.user.id]
+    print(request.user.id)
     for user in request.user.friends.all():
         user_ids.append(user.id)
 
