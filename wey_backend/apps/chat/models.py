@@ -15,7 +15,7 @@ class Conversition(models.Model):
 
 class ConversitionMessage(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
-    conversition = models.ForeignKey(Conversition, related_name='сообщение',  on_delete=models.CASCADE)
+    conversition = models.ForeignKey(Conversition, related_name='messages',  on_delete=models.CASCADE)
     body = models.TextField()
     
     created_at = models.DateTimeField(auto_now_add=True)

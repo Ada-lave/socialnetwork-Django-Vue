@@ -86,7 +86,7 @@ def postLike(request, pk):
 def postDetail(request, pk):
     post = Post.objects.get(pk=pk)
 
-
+    
     return JsonResponse({
         'post': PostDetailSerializer(post).data
     }) 

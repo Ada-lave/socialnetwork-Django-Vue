@@ -3,7 +3,7 @@ from rest_framework import serializers
 from apps.account.serializers import UserSerializer
 
 class ConversitionSerializer(serializers.ModelSerializer):
-    users = UserSerializer(read_only=True)
+    users = UserSerializer(read_only=True, many=True)
 
     class Meta:
         model = Conversition
@@ -15,12 +15,12 @@ class ConversitionMessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ConversitionMessage
-        fields = ('id','sent_to','created_by','createdAtFormater','body')
+        fields = ('id','sent_to','created_by','createdAtFormater','body',)
 
 class ConversitionDetailSerializer(serializers.ModelSerializer):
     messages = ConversitionMessageSerializer(read_only=True, many=True)
 
     class Meta:
         model = Conversition
-        fields = ('id','users', 'modifiedAtFormater','messages')
+        fields = ('id','users', 'modifiedAtFormater','messages',)
 
