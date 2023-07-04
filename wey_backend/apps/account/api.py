@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from . import forms
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from .models import User, FriendshipRequest
+from django.core.mail import send_mail
 
 from .serializers import UserSerializer, FriendshipRequestSerializer
 
@@ -20,9 +21,20 @@ def signup(request):
     })
 
     if form.is_valid():
-        form.save()
+        user = form.save()
+        user.is_active = False
+        user.save()
+
+        url = f'http://127.0.0.1:8000/activate/?email={user.email}&id={user.id}'
+
+        send_mail("Пожалуйства активируйте ваш аккаунт"
+                  ,f"Активация аккаунта {url}"
+                  ,"noreply@mail.ru"
+                  ,[user.email]
+                  , fail_silently=False)
     else:
-        message = 'error'
+
+        message = form.errors
 
     return JsonResponse({'message':message})
 
@@ -33,7 +45,8 @@ def informationAboutUser(request):
     return JsonResponse({
         'id': request.user.id,
         'email': request.user.email,
-        'name': request.user.name,                
+        'name': request.user.name, 
+        'avatar':request.user.getAvatar(),               
         })
 
 
@@ -90,4 +103,25 @@ def handleRequest(request, id, status):
         req_user.save()
 
     return JsonResponse({'message':f" {request.user.name}: {user.name} {status}"})
+
+
+@api_view(['POST'])
+def editProfile(request):
+    user = request.user
+    user.name = request.data.get('name')
+    email = request.data.get('email')
+
+    print(request.POST)
+    print(request.FILES)
+
+    if User.objects.exclude(id=user.id).filter(email=email).exists():
+        return JsonResponse({'message':'почта уже занята'})
+    else:
+        form = forms.ProfileForm(request.POST,request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+    
+        serializer = UserSerializer(user)
+        return JsonResponse({'message':'info update','user':serializer.data})
+
     

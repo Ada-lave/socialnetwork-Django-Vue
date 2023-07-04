@@ -2,16 +2,11 @@
     <div class="max-w-7xl mx-auto grid grid-cols-2 gap-4">
         <div class="main-left">
             <div class="p-12 bg-white border border-gray-200 rounded-lg">
-                <h1 class="mb-6 text-2xl"> Регистрация </h1>
+                <h1 class="mb-6 text-2xl"> Изменение  </h1>
 
-                <p class="mb-6 text-gray-500">
-                    мы рады что вы выбрали именно наш сайт, спасибо за вход
-                </p>
+                
 
-                <p class="font-bold">
-                    Уже есть аккаунт? <RouterLink v-bind:to="{'name':'login'}" href="#" class="underline">Нажмите сюда</RouterLink>
-                </p>
-
+                
             </div>
         </div>
 
@@ -43,28 +38,18 @@
                     </div>
 
                     <div>
-                        <label>Пароль</label><br>
-                        <input type="password" placeholder="Пароль" 
+                        <label>Аватар</label><br>
+                        <input type="file" ref="file"
                         class="w-full
                         mt-2
                         px-6
                         py-4
                         border
                         border-gray-200 rounded-lg"
-                        v-model="form.password1">
+                        >
                     </div>
 
-                    <div>
-                        <label>Повторите пароль</label><br>
-                        <input type="password" placeholder="Повторите ваш пароль" 
-                        class="w-full
-                        mt-2
-                        px-6
-                        py-4
-                        border
-                        border-gray-200 rounded-lg"
-                        v-model="form.password2">
-                    </div>
+                    
 
                     <template v-if="errors.length > 0">
                         <div class="bg-red-300 text-white rounded-lg p-6">
@@ -82,7 +67,7 @@
                         text-white
                         rounded-lg"
                         type="submit">
-                        Зарегистрироваться
+                        Изменить
                         </button>
                     </div>
                 </form>
@@ -94,12 +79,15 @@
 <script>
 import axios from 'axios'
 import {useToastStore} from '@/stores/toast'
+import { useUserStore } from '@/stores/user'
 export default {
     setup () {
         const toastStore = useToastStore()
+        const userStore = useUserStore()
 
         return {
-            toastStore
+            toastStore,
+            userStore
         }
     },
 
@@ -107,10 +95,8 @@ export default {
     data() {
         return {
             form: {
-                email:'',
-                name: '',
-                password1: '',
-                password2: ''
+                email:this.userStore.user.email,
+                name: this.userStore.user.name,
             },
             errors: [],
         }
@@ -130,39 +116,38 @@ export default {
                 this.errors.push('Вы забыли ввести имя')
             }
 
-            if (this.form.password1 === '')
-            {
-                this.errors.push('Вы забыли ввести пароль')
-            }
-
-            if (this.form.password1 !== this.form.password2){
-                this.errors.push('Пароли не совпадают')
-            }
 
             if (this.errors.length === 0){
+
+                let formData = new FormData()
+                formData.append('avatar', this.$refs.file.files[0])
+                formData.append('name', this.form.name)
+                formData.append('email', this.form.email)
+                console.log(formData)
+
+
                 axios
-                .post('/api/signup/',this.form)
+                .post('/api/profile/edit/',formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    }
+                })
                 .then((response)=>{
                     console.log(response.data)
-                    
-                    if (response.data.message === 'success') {
-                        this.toastStore.showToast(5000, 'Вы успешно зарегистрированны','bg-emerald-500')
+                    if (response.data.message === 'info update') {
+                        this.toastStore.showToast(5000, 'Сохранено','bg-emerald-500')
                         console.log('yes')
-                        this.form.name = ''
-                        this.form.email = ''
-                        this.form.password1 = ''
-                        this.form.password2 = ''
-                    }
-                    else if(response.data.message.email)
-                    {
-                        this.toastStore.showToast(5000, 'Почта уже занята','bg-red-300')
-                    }
-                    else if(response.data.message.password2)
-                    {
-                        this.errors.push('Пароль слишком простой и короткий, добавьте цифр')
+                        
+
+                        this.userStore.setUserInfo({
+                            id: this.userStore.user.id,
+                            name: this.form.name,
+                            email: this.form.email,
+                            avatar: response.data.user.getAvatar,
+                        })
                     }
                     else {
-                        this.toastStore.showToast(5000, 'Что то пошло не так', 'bg-red-300')
+                        this.toastStore.showToast(5000, `${response.message}`, 'bg-red-300')
                     }
                 })
 

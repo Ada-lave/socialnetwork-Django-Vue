@@ -1,5 +1,5 @@
 from django.urls import path
-from .api import postListAll, postListUser, postLike, postDetail, addPost, postComment, postDetailComment
+from .api import postListAll, postListUser, postLike, postDetail, addPost, postComment, postDetailComment, postTrends
 urlpatterns = [
     path('', postListAll, name='allPosts'),
     path('createPost/', addPost, name='addPost'),
@@ -8,6 +8,8 @@ urlpatterns = [
     path('<uuid:pk>/like/', postLike, name='postLike'),
     path('<uuid:pk>/', postDetail, name='postDetail'),
     path('<uuid:pk>/comments/', postDetailComment, name='postDetail'),
+    path('trends/', postTrends, name='postTrends')
+
 
 
 

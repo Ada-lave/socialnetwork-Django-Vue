@@ -44,14 +44,10 @@
                         v-model="form.password">
                     </div>
 
-                    <template>
-
-                        <div v-if="errors.length > 0" class="bg-red-300 text-white rounded-lg p-6">
-                            <p v-for="error in errors" v-bind.key="error">
-                                {{ error }}
-                            </p>
+                    <template v-if="errors.length > 0">
+                        <div class="bg-red-300 text-white rounded-lg p-6">
+                            <p v-for="error in errors" v-bind:key="error">{{ error }}</p>
                         </div>
-
                     </template>
 
                     <div>
@@ -73,12 +69,15 @@
 <script>
 import axios from 'axios'
 import { useUserStore } from "@/stores/user"
+import { useToastStore } from "@/stores/toast"
 export default {
     setup(){
         const userStore = useUserStore()
+        const toastStore = useToastStore()
 
         return {
-            userStore
+            userStore,
+            toastStore
         }
     },
 
@@ -117,19 +116,29 @@ export default {
                 })
                 .catch(error => {
                     console.log(error)
-                })
 
+                    this.errors.push("Вы забыли указать пароль или логин")
+                    
+                })
+            }
+
+            console.log(this.errors)
+
+            if (this.errors.length === 0)
+            {
                 await axios
                 .get('/api/me/')
                 .then(response => {
                     this.userStore.setUserInfo(response.data)
-
                     this.$router.push('/feed')
+
+                    
                 })
                 .catch(error => {
                     console.log(error)
                 })
             }
+            
         }
     }
 }

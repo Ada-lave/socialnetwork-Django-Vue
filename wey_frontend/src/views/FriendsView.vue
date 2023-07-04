@@ -3,13 +3,13 @@
         <div class="main-left col-span-1">
 
             <div class="p-4 bg-white border border-gray-200 text-center rounded-lg">
-                <img src="https://i.pravatar.cc/300?img=70" class="mb-6 rounded-full">
+                <img v-bind:src="user.getAvatar" class="mb-6 rounded-full">
 
                 <p><strong>{{ user.name }}</strong></p>
 
                 <div class="mt-6 flex space-x-8 justify-around">
                     <RouterLink v-bind:to="{name:'friends',params: {id: user.id}}" class="text-xs text-gray-500">{{ user.friends_count }} friends</RouterLink>
-                    <p class="text-xs text-gray-500">448 posts</p>
+                    <p class="text-xs text-gray-500">{{ user.posts_count }} постов </p>
                 </div>
             </div>
         </div>
@@ -25,7 +25,7 @@
 
                     <RouterLink v-bind:to="{name:'profile',params: {'id':friendReq.created_by.id}}" class="p-4 text-center  bg-gray-100 rounded-lg flex">
 
-                        <img src="https://i.pravatar.cc/70?img=70" class="my-auto mx-auto rounded-full">
+                        <img v-bind:src="friendReq.created_by.getAvatar" class="mb-6 rounded-full">
                         <p class="ml-2 my-auto text-sm"><strong>{{ friendReq.created_by.name }}</strong></p>
 
                     </RouterLink>
@@ -57,7 +57,7 @@
 
                     <RouterLink v-bind:to="{name:'profile',params: {'id':user.id}}">
 
-                        <img src="https://i.pravatar.cc/300?img=70" class="mb-6 rounded-full">
+                        <img v-bind:src="user.getAvatar" class="mb-6 rounded-full">
                         <p><strong>{{ user.name }}</strong></p>
 
                     </RouterLink>

@@ -11,5 +11,6 @@ urlpatterns = [
 
     path('friends/<uuid:pk>/request/', sendFriendshipRequest),
     path('profile/friends/<uuid:pk>/', friendsRequest),
-    path('profile/friends/<uuid:id>/<str:status>/', handleRequest)
+    path('profile/friends/<uuid:id>/<str:status>/', handleRequest),
+    path('profile/edit/',editProfile, name='editProfile')
 ]

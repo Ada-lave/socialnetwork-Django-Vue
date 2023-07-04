@@ -37,7 +37,7 @@
                     <div class="menu-right">
                         <template v-if="userStore.user.isAunthenticated">
                         <RouterLink v-bind:to="{name:'profile', params:{'id':userStore.user.id}}">
-                            <img src="https://i.pravatar.cc/40?img=70" class="rounded-full">
+                            <img v-bind:src="userStore.user.avatar" class="rounded-full w-[40px]">
                         </RouterLink>
                         </template>
 

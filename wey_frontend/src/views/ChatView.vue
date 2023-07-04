@@ -10,10 +10,11 @@
                      v-for="c in conv" v-bind:key="conv.id">
 
                         <div class="flex items-center space-x-2">
-                        <img src="https://i.pravatar.cc/300?img=70" class="w-[40px] rounded-full">
+                            
                         <template
                         v-for="user in c.users" 
                         v-bind:key="user.id">
+                            <img v-if="user.id !== userStore.user.id" v-bind:src="user.getAvatar" class="w-[40px] rounded-full">
                             <p v-if="user.id !== userStore.user.id" class="text-xs font-bold"
                                 v-on:click="getActiveConversition(c.id)"> {{ user.name }} </p>
                         </template>
@@ -52,7 +53,8 @@
 
                         <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200">
 
-                            <img src="https://i.pravatar.cc/300?img=70" class="w-[40px] rounded-full">
+                            <img v-bind:src="messages.created_by.getAvatar" class="w-[40px] rounded-full">
+
 
                         </div>
                     </div>
@@ -61,7 +63,7 @@
                     v-else>
                         <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200">
 
-                            <img src="https://i.pravatar.cc/300?img=70" class="w-[40px] rounded-full">
+                            <img v-bind:src="messages.created_by.getAvatar" class="w-[40px] rounded-full">
 
                         </div>
                         <div>

@@ -4,7 +4,7 @@
                             
                                 
                                 <RouterLink class="flex items-center space-x-6" v-bind:to="{name:'profile', params: {'id':post.created_by.id}}">
-                                    <img src="https://i.pravatar.cc/300?img=70" class="w-[40px] rounded-full">
+                                    <img v-bind:src="post.created_by.getAvatar" class="w-[40px] rounded-full">
                                     <p><strong>{{ post.created_by.name }}</strong></p>
                                 </RouterLink>
                              

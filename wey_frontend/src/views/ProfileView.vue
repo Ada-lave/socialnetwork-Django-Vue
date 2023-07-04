@@ -3,20 +3,20 @@
         <div class="main-left col-span-1">
 
             <div class="p-4 bg-white border border-gray-200 text-center rounded-lg">
-                <img src="https://i.pravatar.cc/300?img=70" class="mb-6 rounded-full">
+                <img v-bind:src="user.getAvatar" class="mb-6 rounded-full">
 
 
                 <p><strong>{{ user.name }}</strong></p>
 
                 <div class="mt-6 flex space-x-8 justify-around">
                     <RouterLink v-bind:to="{name:'friends', params: {'id':user.id}}">
-                        <p class="text-xs text-gray-500">200 friends</p>
+                        <p class="text-xs text-gray-500">{{ user.friends_count }} друзей</p>
                     </RouterLink>
                     
-                    <p class="text-xs text-gray-500">448 posts</p>
+                    <p class="text-xs text-gray-500">{{ user.posts_count }} постов</p>
                 </div>
 
-                <div class="mt-6">
+                <div class="mt-6 space-x-3">
                     <button
                      class="py-4 px-4 text-white bg-green-700 rounded-lg"
                      v-on:click="sendFriendshipRequest()"
@@ -26,9 +26,15 @@
                     <button
                      class="py-4 px-8 text-white bg-red-700 rounded-lg"
                      v-on:click="logout()"
-                     v-else>
+                     v-if="userStore.user.id == user.id">
                      Выйти
                     </button>
+                    <RouterLink
+                     class="py-4 px-8 text-white bg-green-700 rounded-lg"
+                     v-if="userStore.user.id == user.id"
+                     v-bind:to="{name:'editProfile'}">
+                     Изменить
+                    </RouterLink>
                 </div>
             </div>
         </div>
@@ -158,6 +164,7 @@ import {useToastStore} from '@/stores/toast'
                     console.log(response)
                     this.posts.unshift(response.data)
                     this.body = ''
+                    this.user.posts_count+=1
                 })
                 .catch(error => {
                     console.log(error)

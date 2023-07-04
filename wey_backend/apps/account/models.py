@@ -30,6 +30,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=256, blank=True, default='')
     avatar = models.ImageField(upload_to='avatars', blank=True, null=True)
 
+    posts_count=models.IntegerField(default=0)
+
     friends = models.ManyToManyField('self')
     friends_count = models.IntegerField(default=0)
 
@@ -47,6 +49,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = []
+
+    def getAvatar(self):
+        if self.avatar:
+            return f'http://127.0.0.1:8000/{self.avatar.url}'
 
 
 class FriendshipRequest(models.Model):
