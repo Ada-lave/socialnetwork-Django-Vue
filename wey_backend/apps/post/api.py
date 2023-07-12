@@ -3,9 +3,11 @@ from django.http import JsonResponse
 from .serializers import PostSerializer, PostDetailSerializer, CommentSerializer, TrendSerializer
 from .models import Post, Like, Comment, Trend
 from rest_framework.decorators import api_view
-from .forms import PostForm
-from apps.account.models import User
+from .forms import PostForm, AttachmentForm
+from apps.account.models import User, FriendshipRequest
 from apps.account.serializers import UserSerializer
+from apps.notification.utils import createNotification
+from apps.notification.serializers import NotificationSerializer
 
 
 @api_view(['GET'])
@@ -48,26 +50,50 @@ def postListUser(request, id):
     post_serializer = PostSerializer(posts, many=True)
     user_serializer = UserSerializer(user)
 
+    can_send_req = True
+
+    if request.user in user.friends.all():
+        can_send_req = False
+    
+    check1 = FriendshipRequest.objects.filter(created_for=request.user).filter(created_by=user)
+    check2 = FriendshipRequest.objects.filter(created_for=user).filter(created_by=request.user)
+
+    if check1 or check2:
+        can_send_req = False
+
     return JsonResponse({'posts':post_serializer.data,
-                        'user':user_serializer.data}, safe=False)
+                        'user':user_serializer.data,
+                        'can_send_req':can_send_req}, safe=False)
 
 
 
 @api_view(["POST"])
 def addPost(request):
-    data = request.data
+    attachment = None
 
-    form = PostForm(request.data)
+    attachment_from = AttachmentForm(request.POST,request.FILES)
+    form = PostForm(request.POST)
+
+    print(request.FILES)
+    if attachment_from.is_valid():
+        
+        attachment = attachment_from.save(commit=False)
+        attachment.created_by = request.user
+        attachment.save()
+        print('image')
 
     if form.is_valid():
         post = form.save(commit=False)
         post.created_by = request.user
         post.save()
 
+        if attachment:
+            post.attachments.add(attachment)
+
         user = request.user
 
         user.posts_count += 1
-        user.save(  )
+        user.save()
 
         serializer = PostSerializer(post)
         return JsonResponse(serializer.data, safe=False)
@@ -84,6 +110,7 @@ def postLike(request, pk):
         post.likes_count += 1
         post.likes.add(like)
         post.save()
+        notification = createNotification(request, 'postlike', post.id)
         return JsonResponse({'message':'like append'})
     
     elif post.likes.filter(created_by=request.user):
@@ -121,7 +148,10 @@ def postComment(request, pk):
     post = Post.objects.get(pk=pk)
     post.comments.add(comment)
     post.comments_count = post.comments_count + 1
+    notification = createNotification(request, 'postcomment', post.id)
     post.save()
+
+    
 
     serializer = CommentSerializer(comment)
 

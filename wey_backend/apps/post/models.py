@@ -26,6 +26,12 @@ class PostAttachment(models.Model):
 
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    def getImage(self):
+        if self.image:
+            return f'http://127.0.0.1:8000/{self.image.url}'
+        else:
+            return ''
+
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     body = models.TextField(blank=True, null=True)
@@ -49,6 +55,9 @@ class Post(models.Model):
     
     def createdAtFormater(self):
         return timesince(self.created_at)
+    
+    
+
 
 class Trend(models.Model):
     hashtag = models.CharField(max_length=255)

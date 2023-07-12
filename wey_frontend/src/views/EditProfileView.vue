@@ -45,7 +45,8 @@
                         px-6
                         py-4
                         border
-                        border-gray-200 rounded-lg"
+                        border-gray-200 rounded-lg change"
+                        style="display: flex;"
                         >
                     </div>
 
@@ -159,3 +160,4 @@ export default {
     }
 }
 </script>
+

@@ -3,6 +3,7 @@ from . import forms
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from .models import User, FriendshipRequest
 from django.core.mail import send_mail
+from apps.notification.utils import createNotification
 
 from .serializers import UserSerializer, FriendshipRequestSerializer
 
@@ -80,7 +81,8 @@ def sendFriendshipRequest(request, pk):
     check2 = FriendshipRequest.objects.filter(created_for=user).filter(created_by=request.user)
 
     if not check1 or not check2:
-        FriendshipRequest.objects.create(created_for=user, created_by = request.user)
+        fr = FriendshipRequest.objects.create(created_for=user, created_by = request.user)
+        notification = createNotification(request, 'newfriendrequest', friendreq_id=fr.id)
         return JsonResponse({'message':'user add ship'})
     else:
          return JsonResponse({'message':'user alredy in ship'})
@@ -98,12 +100,19 @@ def handleRequest(request, id, status):
         user.friends.add(request.user)
         user.friends_count += 1
         user.save()
+        notification = createNotification(request, 'acceptedfriendrequest', friendreq_id=friendship.id)
+
 
         req_user.friends_count += 1
         req_user.save()
 
     return JsonResponse({'message':f" {request.user.name}: {user.name} {status}"})
 
+
+@api_view(['GET'])
+def friendshipSuggest(request):
+    serializer = UserSerializer(request.user.people_you_may_know.all(), many=True)
+    return JsonResponse(serializer.data, safe=False)
 
 @api_view(['POST'])
 def editProfile(request):

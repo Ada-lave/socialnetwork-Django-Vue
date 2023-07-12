@@ -25,7 +25,7 @@
 
                     <RouterLink v-bind:to="{name:'profile',params: {'id':friendReq.created_by.id}}" class="p-4 text-center  bg-gray-100 rounded-lg flex">
 
-                        <img v-bind:src="friendReq.created_by.getAvatar" class="mb-6 rounded-full">
+                        <img v-bind:src="friendReq.created_by.getAvatar" class="mb-6 rounded-full w-[100px]">
                         <p class="ml-2 my-auto text-sm"><strong>{{ friendReq.created_by.name }}</strong></p>
 
                     </RouterLink>

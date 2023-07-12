@@ -27,7 +27,12 @@
 
                     <RouterLink v-bind:to="{name:'profile',params: {'id':user.id}}">
 
-                        <img v-bind:src="user.getAvatar" class="mb-6 rounded-full">
+                        <template v-if="user.getAvatar">
+                            <img v-bind:src="user.getAvatar" class="mb-6 rounded-full">
+                        </template>
+                        <template v-else>
+                            <img  src="https://i.pravatar.cc/300" class="mb-6 rounded-full">
+                        </template>
                         <p><strong>{{ user.name }}</strong></p>
 
                     </RouterLink>
@@ -95,7 +100,7 @@ import Feed from '../components/Feed.vue'
                 .then(response => {
                     this.users = response.data.users
                     this.posts = response.data.posts
-                    console.log(response.data.posts)
+                    console.log(response.data.users)
                 })
                 .catch(error => {
                     console.log(error)

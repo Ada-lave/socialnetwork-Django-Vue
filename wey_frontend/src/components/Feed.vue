@@ -12,6 +12,13 @@
                             <p class="text-gray-600">{{ post.createdAtFormater }} назад</p>
                         </div>
 
+                        <template v-if="post.attachments.length">
+                            <img v-for="image in post.attachments" 
+                            v-bind:key="image.id" 
+                            v-bind:src="image.getImage"
+                            class="rounded-lg">
+                        </template>
+
                       <p>{{ post.body }}</p>
                         <div class="my-6 flex justify-between">
                             <div class="flex space-x-6">

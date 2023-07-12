@@ -32,6 +32,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     posts_count=models.IntegerField(default=0)
 
+    people_you_may_know = models.ManyToManyField('self')
+
     friends = models.ManyToManyField('self')
     friends_count = models.IntegerField(default=0)
 
@@ -53,6 +55,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def getAvatar(self):
         if self.avatar:
             return f'http://127.0.0.1:8000/{self.avatar.url}'
+        return 'https://i.pravatar.cc/300'
 
 
 class FriendshipRequest(models.Model):

@@ -12,11 +12,21 @@
                     <textarea class="p-4 w-full bg-gray-100 rounded-lg"
                      placeholder="Пишите свои посты тут"
                      v-model="body"></textarea>
+
+                     <div id="preview">
+                    <img v-if="url" v-bind:src="url" class="w-[100px] rounded-xl mt-2">  
+                    </div>
                 </div>
+
+                
 
                 <div class="p-4 border-t border-gray-100 flex justify-between">
 
-                    <a class=" inline-block py-4 px-6 bg-gray-600 text-white rounded-lg">Добавить фото</a>
+                    <label class="inline-block py-4 px-6 bg-gray-600 text-white rounded-lg">
+                        <input type="file" ref="file" v-on:change="onChangeImage">
+                        Добавить фото
+                    </label>
+                    
                     <button
                     class=" inline-block py-4 px-3 bg-purple-600 text-white rounded-lg"
                     type="submit">Выложить</button>
@@ -65,7 +75,8 @@ import Feed from '../components/Feed.vue'
         data(){
             return {
                 posts: [],
-                body: ''
+                body: '',
+                url:null,
             }
         },
 
@@ -90,14 +101,24 @@ import Feed from '../components/Feed.vue'
                 console.log(this.body)
 
 
+                let form = new FormData()
+                form.append('image',this.$refs.file.files[0])
+                form.append('body',this.body)
+
+
                 axios
-                .post('/api/posts/createPost/', {
-                    'body' : this.body
+                .post('/api/posts/createPost/',form,{
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    }
                 })
                 .then(response => {
                     console.log(response)
                     this.posts.unshift(response.data)
                     this.body = ''
+                    this.$refs.file.files.value = null
+                    this.url = null
+                    this.user.posts_count+=1
                 })
                 .catch(error => {
                     console.log(error)
@@ -119,8 +140,13 @@ import Feed from '../components/Feed.vue'
                 .catch(error => {
                     console.log(error)
                 })
-            }
+            },
+            onChangeImage(e){
+                const file = e.target.files[0]
+                this.url = URL.createObjectURL(file)
+            },
         }
     }
 
 </script>
+

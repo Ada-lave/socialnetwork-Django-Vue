@@ -1,6 +1,6 @@
 <template>
 
-                        <div class="mb-6 flex items-center justify-between">
+                        <div class="mb-4 flex items-center justify-between p-4">
                             
                                 
                                 <RouterLink class="flex items-center space-x-6" v-bind:to="{name:'profile', params: {'id':comment.created_by.id}}">
@@ -10,9 +10,10 @@
                              
 
                             <p class="text-gray-600">{{ comment.createdAtFormater }} назад</p>
+                              
                         </div>
-
-                      <p>{{ comment.body }}</p>
+                        <p class="ml-4 mb-2">{{ comment.body }}</p>
+                     
                          
 
 
